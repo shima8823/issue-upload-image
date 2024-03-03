@@ -1,25 +1,9 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import {Button, SafeAreaView, useColorScheme} from 'react-native';
+import {Button, SafeAreaView} from 'react-native';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-
-import {launchImageLibrary} from 'react-native-image-picker';
-import {ImagePickerResponse} from 'react-native-image-picker';
+import {launchImageLibrary, ImagePickerResponse} from 'react-native-image-picker';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   const onPress = async () => {
     console.log('Button pressed');
 
@@ -34,7 +18,7 @@ function App(): React.JSX.Element {
       return;
 
     let asset = result.assets[0];
-    // asset.uri = "file:///Users/shima/Downloads/dalle.png"
+    // asset.uri = "file:///Users/{username}/Downloads/example.png"
     console.log('result.assets[0].uri: ', result.assets[0].uri);
     const blobPromise = (await fetch(asset.uri as string)).blob();
     let blob = await blobPromise;
@@ -45,7 +29,7 @@ function App(): React.JSX.Element {
     // const blobURL = URL.createObjectURL(blob)
     let file = new File([blob], asset.uri, {
       type: asset.type as string,
-      lastModified: new Date().getTime(), // ファイルの最終更新時間
+      lastModified: new Date().getTime(),
     });
     formData.append('file', file);
 
@@ -62,14 +46,13 @@ function App(): React.JSX.Element {
       console.log('response not ok');
       return;
     }
-	console.log(blob)
 
 	console.log('response:', response);
   };
 
   return (
     <>
-      <SafeAreaView style={backgroundStyle}></SafeAreaView>
+      <SafeAreaView></SafeAreaView>
       <Button title="upload image" onPress={onPress} />
     </>
   );
