@@ -3,6 +3,8 @@ import {Button, SafeAreaView} from 'react-native';
 
 import {launchImageLibrary, ImagePickerResponse} from 'react-native-image-picker';
 
+const correctMode = true;
+
 function App(): React.JSX.Element {
   const onPress = async () => {
     let result: ImagePickerResponse | undefined;
@@ -15,33 +17,36 @@ function App(): React.JSX.Element {
       return;
 
     let asset = result.assets[0];
-    console.log('result.assets[0].uri: ', result.assets[0].uri);
+    console.log('asset.uri: ', asset.uri);
 
     const blob = await (await fetch(asset.uri as string)).blob();
     console.log('blob.size: ', blob.size);
 
     const formData = new FormData();
 
-    const blobURL = URL.createObjectURL(blob);
-    let file = new File([blob], asset.uri, {
-      type: asset.type as string,
-      lastModified: new Date().getTime(),
-    });
-    formData.append('file',
-
-        file,
-        // name: asset.fileName!,
-        // type: asset.type!,
-        // uri: asset.uri!,
-    );
-    
+    if (correctMode) {
+        // correct file size
+        formData.append('file', {
+                name: asset.fileName!,
+                uri: asset.uri!,
+            }
+        );
+    } else {
+        // file size 0 
+        let file = new File(
+            [blob],
+            asset.fileName!, 
+            {
+                type: asset.type as string,
+                lastModified: new Date().getTime(),
+            }
+        );
+        formData.append('file', file);
+    }
 
     const response = await fetch('http://localhost:3000/upload', {
       method: 'POST',
       body: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
     });
 
     if (!response.ok) {
